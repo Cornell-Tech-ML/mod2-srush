@@ -37,12 +37,10 @@ def index_to_position(index: Index, strides: Strides) -> int:
     storage based on strides.
 
     Args:
-    ----
         index : index tuple of ints
         strides : tensor strides
 
     Returns:
-    -------
         Position in storage
 
     """
@@ -57,7 +55,6 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     may not be the inverse of `index_to_position`.
 
     Args:
-    ----
         ordinal: ordinal position to convert.
         shape : tensor shape.
         out_index : return index corresponding to position.
@@ -77,14 +74,12 @@ def broadcast_index(
     removed.
 
     Args:
-    ----
         big_index : multidimensional index of bigger tensor
         big_shape : tensor shape of bigger tensor
         shape : tensor shape of smaller tensor
         out_index : multidimensional index of smaller tensor
 
     Returns:
-    -------
         None
 
     """
@@ -96,16 +91,13 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
     """Broadcast two shapes to create a new union shape.
 
     Args:
-    ----
         shape1 : first shape
         shape2 : second shape
 
     Returns:
-    -------
         broadcasted shape
 
     Raises:
-    ------
         IndexingError : if cannot broadcast
 
     """
@@ -114,7 +106,7 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
 
 
 def strides_from_shape(shape: UserShape) -> UserStrides:
-    "Return a contiguous stride for a shape"
+    """Return a contiguous stride for a shape"""
     layout = [1]
     offset = 1
     for s in reversed(shape):
@@ -158,14 +150,14 @@ class TensorData:
         assert len(self._storage) == self.size
 
     def to_cuda_(self) -> None:  # pragma: no cover
+        """Convert to cuda"""
         if not numba.cuda.is_cuda_array(self._storage):
             self._storage = numba.cuda.to_device(self._storage)
 
     def is_contiguous(self) -> bool:
         """Check that the layout is contiguous, i.e. outer dimensions have bigger strides than inner dimensions.
 
-        Returns
-        -------
+        Returns:
             bool : True if contiguous
 
         """
@@ -211,6 +203,7 @@ class TensorData:
             yield tuple(out_index)
 
     def sample(self) -> UserIndex:
+        """Get a random valid index"""
         return tuple((random.randint(0, s - 1) for s in self.shape))
 
     def get(self, key: UserIndex) -> float:
@@ -221,17 +214,16 @@ class TensorData:
         self._storage[self.index(key)] = val
 
     def tuple(self) -> Tuple[Storage, Shape, Strides]:
+        """Return core tensor data as a tuple."""
         return (self._storage, self._shape, self._strides)
 
     def permute(self, *order: int) -> TensorData:
         """Permute the dimensions of the tensor.
 
         Args:
-        ----
             *order: a permutation of the dimensions
 
         Returns:
-        -------
             New `TensorData` with the same storage and a new dimension order.
 
         """
@@ -243,6 +235,7 @@ class TensorData:
         raise NotImplementedError("Need to implement for Task 2.1")
 
     def to_string(self) -> str:
+        """Convert to string"""
         s = ""
         for index in self.indices():
             l = ""
